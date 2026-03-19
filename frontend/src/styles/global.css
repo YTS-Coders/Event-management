@@ -1,0 +1,154 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:wght@400;600;700&display=swap');
+
+:root {
+  --burgundy:     #800020;   /* Richer Burgundy */
+  --burgundy-soft:#fff0f3;
+  --indigo:       #1a2a44;   /* Deeper Navy */
+  --brass:        #d4af37;   /* Metallic Gold */
+  --brass-soft:   #fcf8e8;
+  --linen:        #e9ecef;   /* Neutral Gray/Blue */
+  --plaster:      #f8f9fa;   /* Modern Light BG */
+  --white:        #ffffff;
+  --text-dark:    #2c3e50;
+  --text-mid:     #546e7a;
+  --text-light:   #90a4ae;
+  --success:      #10b981;
+  --emerald-soft: #ecfdf5;
+  --error:        #ef4444;
+  --warning:      #f59e0b;
+  --glass:        rgba(255, 255, 255, 0.8);
+  --shadow-sm:    0 2px 4px rgba(0,0,0,0.05);
+  --shadow-md:    0 10px 15px -3px rgba(0,0,0,0.1);
+  --shadow-lg:    0 20px 25px -5px rgba(0,0,0,0.1);
+
+  /* Breakpoints */
+  --mobile: 480px;
+  --tablet: 768px;
+  --desktop: 1024px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background-color: var(--plaster);
+  color: var(--text-dark);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Playfair Display', serif;
+  color: var(--burgundy);
+}
+
+code, pre, .monospace {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s ease;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  outline: none;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.3s ease;
+}
+
+input, select, textarea {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--linen);
+  border: 1px solid transparent;
+  padding: 12px;
+  border-radius: 4px;
+  width: 100%;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--indigo);
+  outline: none;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--plaster);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--indigo);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--burgundy);
+}
+
+/* Common Classes */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.card {
+  background: var(--white);
+  border: 1px solid var(--linen);
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 32px rgba(196, 159, 109, 0.25);
+}
+
+.btn-primary {
+  background: var(--burgundy);
+  color: var(--white);
+  padding: 10px 20px;
+  border-radius: 4px;
+}
+
+.btn-primary:hover {
+  background: var(--burgundy);
+  box-shadow: 0 0 15px var(--brass);
+}
+
+.badge {
+  padding: 4px 12px;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.badge-brass {
+  background: var(--brass);
+  color: var(--indigo);
+}
+
+/* Skeleton animation */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+}

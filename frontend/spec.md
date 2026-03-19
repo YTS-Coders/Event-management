@@ -1,450 +1,457 @@
-Technical Specification: Centralized Event Management System
+---
 
-1. Persona & Tech Stack
+## 🎨 MASTER PROMPT — Sacred Heart College Event Management System (Frontend)
 
-Role: Senior Frontend Engineer & UI/UX Designer.
-Stack: React (Vite), Tailwind CSS, Lucide-React Icons.
-Typography: - Headings: Playfair Display (Serif) for a luxury/academic feel.
+---
 
-Body/UI: DM Sans (Sans-Serif) for legibility.
+```
+You are a senior full-stack MERN engineer and UI/UX specialist with 20+ years of experience 
+building scalable, visually exceptional production applications.
 
-2. Design System (The "Opera Luxury" Palette)
+Your task is to generate a COMPLETE, FULLY FUNCTIONAL React.js frontend for a 
+Centralized College Event Registration and Management System.
 
-Implement the following CSS variables and use them strictly:
+---
 
-Midnight Indigo (#233E65): Used for Sidebars, Header text, and primary structural backgrounds.
+# 🎨 DESIGN SYSTEM — MANDATORY COLOR PALETTE
 
-Deep Burgundy (#710927): Used for Primary CTAs, active states, and danger/authority badges.
+Use ONLY these exact colors as CSS variables throughout the entire application:
 
-Antique Brass (#C49F6D): Used for luxury accents, hover borders, and secondary highlights.
+:root {
+  --burgundy:     #710927;   /* Primary — buttons, headers, active states */
+  --indigo:       #233E65;   /* Secondary — sidebar, nav, card borders */
+  --brass:        #C49F6D;   /* Accent — icons, highlights, hover glows */
+  --linen:        #DDD1BC;   /* Muted backgrounds, input fills, dividers */
+  --plaster:      #F0EFEA;   /* Page background, card backgrounds */
+  --white:        #FFFFFF;
+  --text-dark:    #1A1A1A;
+  --text-mid:     #4A4A4A;
+  --text-light:   #8A8A8A;
+  --success:      #2D6A4F;
+  --error:        #9B1C1C;
+  --warning:      #92400E;
+}
 
-Plaster (#F0EFEA): The primary global background color (off-white).
+Typography Rules:
+- Display/Headings: 'Playfair Display' (Google Fonts) — serif elegance matching the college identity
+- Body/UI: 'DM Sans' (Google Fonts) — clean, modern readability
+- Monospace/Codes: 'JetBrains Mono' — for IDs, roll numbers, codes
 
-Raw Linen (#DDD1BC): Used for card borders and subtle divider elements.
+Visual Language:
+- Background: var(--plaster) base with subtle linen texture on cards
+- Primary CTA buttons: var(--burgundy) with brass hover glow
+- Nav/Sidebar: var(--indigo) with white text, brass active indicator
+- Card borders: 1px solid var(--linen), subtle box-shadow in brass tones
+- Section headers: var(--burgundy) underline accent
+- Input fields: var(--linen) background, var(--indigo) focus ring
+- Badges/Tags: var(--brass) background, var(--indigo) text
+- Toast success: var(--success), error: var(--error), warning: var(--warning)
+- Animations: smooth 200–300ms ease transitions on all interactions
+- No Tailwind — plain CSS only with CSS variables
 
-3. Core Architecture
+---
 
-Auth State: React Context Provider managing user, role (ADMIN, HOD, LEADER), and token.
+# 🏗️ PROJECT SETUP
 
-Navigation: A view-based system (or React Router) handling:
+Framework: React.js with Vite
+Dependencies to install:
+- axios
+- react-router-dom
+- react-toastify
+- qrcode.react
+- react-dropzone (for file uploads)
 
-Public: Landing, RegisterForm, PaymentUpload.
-
-Auth: Login.
-
-Private: DashboardShell (wrapping Admin, HOD, and Leader dashboards).
-
-4. Component Specifications
-
-A. The Dashboard Shell
-
-Sidebar (Indigo background): Fixed 64rem/240px width. Features a logo with a Brass underline, navigation links with Indigo/Plaster active states, and a role-specific badge in Burgundy.
-
-Header (White/Plaster): Sticky navigation with a Playfair H2 title and a notification bell featuring a Burgundy counter badge.
-
-B. Public Landing & Registration
-
-Hero Section: Indigo background with a Burgundy geometric decorative element. Heading: "Discover Events. Register. Attend."
-
-Event Cards: White background, subtle linen border, 4px vertical lift on hover. Badge for department and large currency text in Burgundy.
-
-Payment Flow:
-
-Registration Form: Single column, max-width 520px.
-
-Payment Page: Split screen. Left is Indigo with a large white QR code frame and Brass currency text. Right is a white upload zone with a dashed Indigo border.
-
-C. Role-Based Dashboards
-
-Admin: Features a 3-column stats row with Burgundy top-borders. Includes a "Pending Approvals" table with optimistic UI actions (Check/X icons).
-
-HOD: Includes a "My Department" table and an SES Intelligence Report generator—a dark Indigo card that "analyzes" feedback and outputs a monospace report in a code block.
-
-Leader: A verification workflow. Tables showing participant data with "View Screenshot" triggers that open a luxury modal with image preview and Approve/Reject controls.
-
-5. Functional Requirements
-
-Mock API Service: Simulate a backend with events, participants, and notifications.
-
-Form Handling: Implement loading states for "Processing..." and "Uploading Proof..." buttons.
-
-UX Details:
-
-Monospace font for IDs (e.g., P001).
-
-Custom scrollbar styling (Brass thumb on Plaster track).
-
-Logic to filter events by department for HODs.
-
-Success states with green CheckCircle animations.
-
-# Centralized Event Management System - Backend Analysis
-
-## 1. Project Overview
-The Centralized Event Management System is a comprehensive Node.js and Express backend designed to handle event creation, participant registration, payment verification, and automated workflows. It leverages MongoDB for data storage, JWT for secure authentication, Cloudinary for payment proof uploads, Nodemailer for automated email dispatch (including inline QR codes), and the Google Gemini API for intelligent SES (Summary & Evaulation) event reporting. The system uses a strict Role-Based Access Control (RBAC) architecture to segregate capabilities among Admins, HODs, Leaders, and individual Participants.
-
-## 2. Complete Folder Structure
-```text
-backend/
-├── config/
-│   ├── cloudinary.js         # Cloudinary SDK configuration
-│   └── db.js                 # MongoDB connection setup
-├── controllers/
-│   ├── analyticsController.js   # Analytics and reporting logic
-│   ├── authController.js        # Login and registration logic
-│   ├── certificateController.js # PDF certificate generation logic
-│   ├── eventController.js       # Event CRUD and approvals
-│   ├── notificationController.js# User notifications logic
-│   ├── participantController.js # Registration, QR gen, email, proofs
-│   └── sesController.js         # Gemini AI report generation
-├── middleware/
-│   ├── authMiddleware.js     # JWT verification middleware
-│   ├── errorMiddleware.js    # Global error handler
-│   ├── roleMiddleware.js     # RBAC role verification
-│   └── uploadMiddleware.js   # Multer local storage setup
-├── models/
-│   ├── Event.js              # Event database schema
-│   ├── Notification.js       # Notification database schema
-│   ├── Participant.js        # Participant database schema
-│   └── User.js               # User (Admin/HOD/Leader) schema
-├── routes/
-│   ├── analyticsRoutes.js
-│   ├── authRoutes.js
-│   ├── certificateRoutes.js
-│   ├── eventRoutes.js
-│   ├── notificationRoutes.js
-│   ├── participantRoutes.js
-│   └── sesRoutes.js
+Folder Structure:
+src/
+├── api/
+│   ├── axiosInstance.js       # Axios with auth interceptor
+│   ├── authApi.js
+│   ├── eventsApi.js
+│   ├── participantsApi.js
+│   ├── analyticsApi.js
+│   ├── notificationsApi.js
+│   ├── certificateApi.js
+│   └── sesApi.js
+├── context/
+│   └── AuthContext.jsx        # Auth + role state via Context API
+├── components/
+│   ├── Navbar.jsx
+│   ├── Sidebar.jsx
+│   ├── EventCard.jsx
+│   ├── GameCard.jsx
+│   ├── QRPayment.jsx
+│   ├── Loader.jsx
+│   ├── Toast.jsx
+│   ├── ProtectedRoute.jsx
+│   ├── NotificationBell.jsx
+│   └── ImageSlider.jsx
+├── pages/
+│   ├── LandingPage.jsx
+│   ├── EventDetailsPage.jsx
+│   ├── RegistrationPage.jsx
+│   ├── LoginPage.jsx
+│   ├── admin/
+│   │   ├── AdminDashboard.jsx
+│   │   ├── PendingEvents.jsx
+│   │   └── DepartmentView.jsx
+│   ├── hod/
+│   │   ├── HODDashboard.jsx
+│   │   ├── CreateEvent.jsx
+│   │   ├── CreateLeader.jsx
+│   │   └── SESReport.jsx
+│   └── leader/
+│       ├── LeaderDashboard.jsx
+│       ├── ManageGames.jsx
+│       └── VerifyPayments.jsx
 ├── utils/
-│   ├── generateParticipantId.js # Auto-incrementing ID generator
-│   └── sendEmail.js             # Nodemailer email transporter
-├── .env                      # Environment variables
-├── .gitignore                # Git ignore rules
-└── server.js                 # Express application entry point
+│   ├── debounce.js
+│   ├── formatDate.js
+│   └── roleGuard.js
+├── styles/
+│   ├── global.css
+│   ├── navbar.css
+│   ├── landing.css
+│   ├── eventdetails.css
+│   ├── registration.css
+│   ├── dashboard.css
+│   ├── auth.css
+│   └── components.css
+├── App.jsx
+└── main.jsx
+
+---
+
+# 🌐 BACKEND BASE URL
+
+const BASE_URL = "http://localhost:5000";
+
+Configure in axiosInstance.js:
+- baseURL: BASE_URL
+- Attach Bearer token from localStorage on every request
+- 401 interceptor → clear localStorage → redirect to /login
+
+---
+
+# 📄 PAGE-BY-PAGE IMPLEMENTATION
+
+## PAGE 1: Landing Page (/")
+
+Layout:
+- Full-width college header bar:
+  Background: var(--burgundy)
+  Text: "SACRED HEART COLLEGE (AUTONOMOUS)" in Playfair Display, white
+  Subtitle: "Tiruchengode — Empowering Excellence Since 1953"
+  
+- ImageSlider component below header:
+  Auto-advancing (4s interval), admin-uploaded images
+  Dots navigation, arrow controls styled in var(--brass)
+  Fallback: show 3 placeholder gradient slides in indigo/burgundy
+  
+- Section: "Upcoming Events"
+  Grid: 3 columns on desktop, 2 on tablet, 1 on mobile
+  Each card: EventCard component
+  Fetch from GET /api/events/public
+  
+- Footer: college name, contact, social icons in var(--indigo)
+
+EventCard Component:
+- Image (fallback: gradient with event title initial)
+- Event title in Playfair Display
+- Date, department badge in var(--brass)
+- Short description (truncated to 2 lines)
+- "View Details →" button in var(--burgundy)
+- Hover: card lifts with brass shadow (box-shadow: 0 8px 32px rgba(196,159,109,0.25))
+- Click: navigate to /events/:id
+
+---
+
+## PAGE 2: Event Details Page (/events/:id)
+
+Layout: Two-column on desktop (60% content / 40% sidebar)
+
+Left column:
+- Hero image (full width, rounded)
+- Event title (Playfair Display, 2.5rem, var(--burgundy))
+- Date, time, venue tags
+- Description (full)
+- Instructions (numbered list, indigo bullet style)
+
+Right column (sticky):
+- "Games in This Event" section
+  Each game as a GameCard:
+  - Name + icon
+  - Rules (collapsible accordion)
+  - Participant limit badge
+  - Current registrations count (if available)
+  
+- "Register Now" CTA button (full width, var(--burgundy))
+  → navigates to /register/:id
+  → disabled with tooltip if event is not approved
+
+---
+
+## PAGE 3: Registration Page (/register/:id)
+
+Multi-step form with progress indicator (3 steps):
+
+Step 1 — Participant Details:
+Fields:
+- Full Name (text, required)
+- Roll Number (text, required, uppercase transform)
+- Department (select dropdown, populated from event data)
+- Email (email, required)
+- Phone (tel, required, 10 digits)
+
+Step 2 — Game Selection:
+- Display all games as checkbox cards
+- Each card shows: game name, rules summary, participant limit
+- Max selection limit shown as: "Select up to X games"
+- Warning toast if limit exceeded: "You can only select up to X games"
+- Real-time remaining slot counter per game
+
+Step 3 — Payment:
+- Show event fee amount
+- QRPayment component:
+  - Generate UPI QR using: upi://pay?pa={upiId}&pn={collegeName}&am={amount}&cu=INR
+  - Use qrcode.react library
+  - Display UPI ID below QR
+  - "QR Valid for This Session Only" warning
+- File Upload (react-dropzone):
+  - Accept: image/*, .pdf
+  - Show preview of uploaded screenshot
+  - Upload on submit: POST /api/participants/upload/:participantId
+
+Form Flow:
+1. Validate Step 1 → POST /api/participants/register → store returned participantId
+2. Validate Step 2 (game limits)
+3. Show QR → upload screenshot → POST /api/participants/upload/:id
+4. Success screen with:
+   - Confirmation message
+   - Participant ID display (monospace font)
+   - "Download Certificate" button → GET /api/certificate/generate/:id
+
+Debounce submit button: 2000ms to prevent spam
+All API errors: show toast with error.response.data.message
+
+---
+
+## PAGE 4: Login Page (/login)
+
+Layout: Centered card on plaster background
+- College logo/name at top
+- Email + Password fields
+- "Login" button (burgundy)
+- Role shown after login as badge (ADMIN / HOD / LEADER)
+
+POST /api/auth/login → store token + role in localStorage
+AuthContext: { user, role, token, login(), logout() }
+
+After login, redirect by role:
+- ADMIN → /admin/dashboard
+- HOD → /hod/dashboard
+- LEADER → /leader/dashboard
+
+---
+
+## DASHBOARD 1: HOD Dashboard (/hod/dashboard)
+
+Sidebar navigation (var(--indigo)):
+- Create Event
+- Create Leader
+- My Events
+- SES Report
+- Notifications
+
+Create Event Form (POST /api/events/create):
+Fields:
+- Event Title
+- Description
+- Instructions (textarea)
+- Event Date + Time (datetime-local)
+- Venue
+- Department
+- Fee Amount
+- UPI ID (for payment QR)
+- Max Games Per Participant (number, controls game selection limit)
+- Games section (dynamic add/remove):
+  Each game:
+  - Game Name
+  - Rules
+  - Participant Limit
+  - Category (Technical / Non-Technical)
+- Event Poster Upload
+
+Create Leader Form (POST /api/auth/register with role: LEADER):
+Fields: Name, Email, Password, Department, Assigned Event
+
+My Events: list of HOD's events with status badges:
+- Pending: var(--warning)
+- Approved: var(--success)
+- Rejected: var(--error)
+- Completed: var(--indigo)
+
+SES Report (/hod/ses-report):
+- Upload section (react-dropzone):
+  Accept: .zip, .pdf, .doc, .docx
+  Files: Invitation letter, Feedback forms, Resource person details
+- "Generate SES Report" button
+- POST /api/ses/generate → display formatted report in preview panel
+
+---
+
+## DASHBOARD 2: Leader Dashboard (/leader/dashboard)
+
+Sidebar navigation:
+- My Games
+- Verify Payments
+- Notifications
+
+Manage Games:
+- List games assigned to this leader
+- Edit participant limits (inline edit)
+- Set game status: Open / Closed
+
+Verify Payments (PUT /api/events/verify/:id):
+- Table of participants pending verification
+- Columns: Name, Roll No, Department, Games, Payment Screenshot
+- Screenshot preview (clickable thumbnail)
+- Approve / Reject buttons per row
+- Bulk approve option
+
+---
+
+## DASHBOARD 3: Admin Dashboard (/admin/dashboard)
+
+Sidebar navigation:
+- Pending Events
+- All Departments
+- Analytics
+- Notifications
+
+Pending Events (GET /api/events/pending):
+- Card view of events awaiting approval
+- Each card: event name, HOD name, department, date, poster thumbnail
+- Action buttons:
+  Approve: PUT /api/events/approve/:id (green, var(--success))
+  Reject: PUT /api/events/reject/:id (red, var(--error))
+  Mark Complete: PUT /api/events/complete/:id (indigo)
+- Rejection: prompt for reason (modal with textarea)
+
+Analytics (GET /api/analytics):
+- Stats cards: Total Events, Total Participants, Pending Approvals
+- Styled with brass accent borders
+- Simple bar representation using CSS (no chart library)
+
+Notifications (GET /api/notifications):
+- List with read/unread states
+- PUT /api/notifications/read/:id on click
+- NotificationBell in navbar shows unread count badge
+
+---
+
+# 🔐 ROUTE PROTECTION
+
+ProtectedRoute component:
+- Reads role from AuthContext
+- Redirects unauthorized roles to /unauthorized page
+- Unauthenticated → /login
+
+Route map in App.jsx:
+/ → LandingPage (public)
+/events/:id → EventDetailsPage (public)
+/register/:id → RegistrationPage (public)
+/login → LoginPage
+/admin/* → AdminDashboard (role: ADMIN)
+/hod/* → HODDashboard (role: HOD)
+/leader/* → LeaderDashboard (role: LEADER)
+/unauthorized → Simple 403 page
+
+---
+
+# 🧩 REUSABLE COMPONENTS
+
+Navbar:
+- Logo + college name left
+- Nav links center (public: Home, Events)
+- Right: login button OR user avatar + role badge + notification bell + logout
+- Sticky, var(--indigo) background, brass hover underlines
+- Mobile: hamburger menu
+
+Loader:
+- Full-page overlay during API calls
+- Animated: spinning ring in var(--brass) on var(--plaster) backdrop
+
+Toast System (react-toastify):
+- Position: top-right
+- Success: var(--success) with check icon
+- Error: var(--error) with X icon
+- Warning: var(--warning) with ! icon
+- Auto-close: 4000ms
+
+QRPayment Component:
+- Props: upiId, amount, collegeName
+- Generates UPI deep link and renders QR via qrcode.react
+- Shows UPI ID in monospace below
+- Copy UPI ID button
+- "Scan & Pay" instruction text
+
+---
+
+# 🛠️ UTILITY FUNCTIONS
+
+debounce.js: standard debounce implementation, use on form submit
+formatDate.js: format ISO dates → "19 March 2026, 10:00 AM"
+roleGuard.js: helper to check if current user role matches allowed roles
+
+---
+
+# ✅ QUALITY REQUIREMENTS
+
+1. Every API call must have:
+   - Loading state (show Loader or skeleton)
+   - Error state (show toast with message)
+   - Empty state (show styled empty illustration with message)
+
+2. Forms must have:
+   - Client-side validation before API call
+   - Field-level error messages (red text below field)
+   - Disabled submit during loading
+
+3. CSS must:
+   - Use ONLY the defined CSS variables
+   - Be responsive (mobile-first)
+   - Have smooth hover/focus transitions
+   - Never use inline styles except for dynamic values (e.g., QR size)
+
+4. Code must:
+   - Use functional components + hooks only
+   - Separate concerns (API calls in /api/, logic in components)
+   - Handle missing APIs gracefully with fallback state
+   - Be fully connected end-to-end
+
+---
+
+# 🚀 DELIVERABLE
+
+Generate COMPLETE, COPY-PASTE READY code for every file listed in the folder structure. 
+Do not skip any file. Do not use placeholder comments like "// add logic here". 
+Every component must be fully implemented and wired to the correct API endpoint.
+Start with: main.jsx → App.jsx → axiosInstance.js → AuthContext.jsx → then all pages in order.
 ```
 
-## 3. Backend Architecture Explanation
-The application follows a standard **MVC (Model-View-Controller)** pattern, specifically tailored for an API-first approach (Model-Route-Controller):
-- **Server Initialization (`server.js`)**: Connects to the database, applies global middleware (CORS, Morgan logger, Rate Limiting), and registers route prefixes (e.g., `/api/auth`).
-- **Routes (`routes/`)**: Defines the HTTP endpoints and attaches necessary middleware (like `protect`, `authorizeRoles`, or `multer` upload handlers) before passing the request to a controller.
-- **Controllers (`controllers/`)**: Contains the core business logic. They process incoming `req` parameters/body, interact with the models, communicate with external SDKs (Cloudinary/Gemini), and format the JSON `res` payload.
-- **Models (`models/`)**: Mongoose schemas defining the structure, relationships (`ref`), and data types in the MongoDB database.
-- **Middleware (`middleware/`)**: Functions that intercept requests. Handles token decoding, role gating, file parsing, and error catching.
-- **Utilities (`utils/`)**: Reusable helper functions abstracted away from controllers, such as dynamic ID generation and email dispatch logic.
-
-## 4. Authentication & Authorization Flow
-- **Registration**: Users (Admin, HOD, Leader) register via `/api/auth/register`. Their plaintext password is mathematically hashed using `bcryptjs` before being saved to MongoDB.
-- **Login**: Users authenticate with email/password. The system compares hashes. On success, it generates a securely signed `JWT (JSON Web Token)` containing their `id` and `role`.
-- **Token Handling**: The client must send this JWT in the `Authorization: Bearer <token>` header for protected routes.
-- **Access Control**: 
-  - `authMiddleware.js` (`protect`) intercepts the request, decodes the JWT, and attaches the `User` document to `req.user`.
-  - `roleMiddleware.js` (`authorizeRoles`) checks `req.user.role` against an allowed array of roles. If unauthorized, it instantly rejects with a `403 Access Denied`.
-
-## 5. Database Schema Documentation
-
-### User Schema (`users`)
-- **name**: `String`
-- **email**: `String` (Unique)
-- **password**: `String` (Hashed)
-- **role**: `String` (Enum: `ADMIN`, `HOD`, `LEADER`)
-- **department**: `String`
-- **timestamps**: `createdAt`, `updatedAt`
-
-### Event Schema (`events`)
-- **title**: `String`
-- **description**: `String`
-- **department**: `String`
-- **createdBy**: `ObjectId` (ref: `User`)
-- **upiId**: `String`
-- **amount**: `Number`
-- **participantIdPrefix**: `String`
-- **status**: `String` (Enum: `PENDING`, `APPROVED`, `REJECTED`, `COMPLETED`, Default: `PENDING`)
-- **timestamps**: `createdAt`, `updatedAt`
-
-### Participant Schema (`participants`)
-- **participantId**: `String` (Auto-generated prefix + counter)
-- **name**: `String`
-- **email**: `String`
-- **phone**: `String`
-- **eventId**: `ObjectId` (ref: `Event`)
-- **paymentScreenshot**: `String` (Cloudinary URL)
-- **paymentStatus**: `String` (Enum: `PENDING`, `APPROVED`, `REJECTED`, Default: `PENDING`)
-- **verifiedBy**: `ObjectId` (ref: `User`)
-- **timestamps**: `createdAt`, `updatedAt`
-
-### Notification Schema (`notifications`)
-- **userId**: `ObjectId` (ref: `User`)
-- **title**: `String`
-- **message**: `String`
-- **read**: `Boolean` (Default: `false`)
-- **timestamps**: `createdAt`, `updatedAt`
-
-
-## 6. Module-wise API Endpoints
-
-| Module | Purpose |
-|--------|---------|
-| **Auth** | Login and user creation |
-| **Events** | Event requests, approvals, and listing |
-| **Participants** | Registration, proof uploads, and payment verification |
-| **Analytics** | Dashboard statistics and revenue |
-| **Notifications** | Reading and marking system alerts |
-| **Certificates** | PDF generation for verified participants |
-| **SES Reports** | AI-driven evaluation reports for completed events |
-
-## 7. Detailed API Documentation
-
-### Auth Module
-**1. Register User**
-- **URL:** `/api/auth/register`
-- **Method:** `POST`
-- **Controller:** `register`
-- **Desc:** Registers a new backend user (staff).
-- **Body:** `{ name, email, password, role, department }`
-- **Auth Reqd:** No
-- **Response:** `{ _id, token }`
-- **Errors:** 500 Server Error
-
-**2. Login User**
-- **URL:** `/api/auth/login`
-- **Method:** `POST`
-- **Controller:** `login`
-- **Desc:** Authenticates a user and returns a JWT.
-- **Body:** `{ email, password }`
-- **Auth Reqd:** No
-- **Response:** `{ _id, role, token }`
-- **Errors:** 401 Invalid credentials
-
 ---
 
-### Events Module
-**3. Create Event**
-- **URL:** `/api/events/create`
-- **Method:** `POST`
-- **Controller:** `createEvent`
-- **Desc:** Submits an event for approval.
-- **Body:** `{ title, description, upiId, amount, participantIdPrefix }`
-- **Auth Reqd:** Yes
-- **Roles:** ADMIN, HOD
-- **Response:** Event Object
-- **Errors:** 403 Access Denied
+### 🔑 What this rewritten prompt adds over your original:
 
-**4. Get Pending Events**
-- **URL:** `/api/events/pending`
-- **Method:** `GET`
-- **Controller:** `getPendingEvents`
-- **Desc:** Retrieves events awaiting approval.
-- **Auth Reqd:** Yes
-- **Roles:** ADMIN
-- **Response:** Array of Event Objects
-
-**5. Get Approved (Public) Events**
-- **URL:** `/api/events/public`
-- **Method:** `GET`
-- **Controller:** `getApprovedEvents`
-- **Desc:** Retrieves live, approved events for public viewing.
-- **Auth Reqd:** No
-- **Response:** Array of Event Objects
-
-**6. Approve Event**
-- **URL:** `/api/events/approve/:id`
-- **Method:** `PUT`
-- **Controller:** `approveEvent`
-- **Desc:** Sets an event status to APPROVED.
-- **URL Params:** `id` (Event ID)
-- **Auth Reqd:** Yes
-- **Roles:** ADMIN
-- **Response:** `{ message: "Event Approved" }`
-- **Errors:** 404 Event not found
-
-**7. Reject Event**
-- **URL:** `/api/events/reject/:id`
-- **Method:** `PUT`
-- **Controller:** `rejectEvent`
-- **Desc:** Sets an event status to REJECTED.
-- **URL Params:** `id` (Event ID)
-- **Auth Reqd:** Yes
-- **Roles:** ADMIN
-- **Response:** `{ message: "Event Rejected" }`
-
-**8. Mark Event Completed**
-- **URL:** `/api/events/complete/:id`
-- **Method:** `PUT`
-- **Controller:** `markEventCompleted`
-- **Desc:** Closes out an event.
-- **URL Params:** `id` (Event ID)
-- **Auth Reqd:** Yes
-- **Roles:** ADMIN, HOD
-- **Response:** `{ message: "Event marked as completed" }`
-
----
-
-### Participant Module
-**9. Register Participant**
-- **URL:** `/api/participants/register`
-- **Method:** `POST`
-- **Controller:** `registerParticipant`
-- **Desc:** Registers a user for an event, emails them a generated QR code for payment.
-- **Body:** `{ name, email, phone, eventId }`
-- **Auth Reqd:** No (Public Form)
-- **Response:** `{ message, participantId, _id, qrImage }`
-- **Errors:** 404 Event not found, 400 Event not available
-
-**10. Upload Payment Proof**
-- **URL:** `/api/participants/upload/:id`
-- **Method:** `POST`
-- **Controller:** `uploadPaymentProof`
-- **Desc:** Parses a `multipart/form-data` image and uploads it to Cloudinary.
-- **URL Params:** `id` (Participant ID)
-- **Body:** Form Data containing a file.
-- **Auth Reqd:** No (Public Form upload step)
-- **Response:** `{ message, url }`
-- **Errors:** 400 No file uploaded
-
-**11. Verify Payment**
-- **URL:** `/api/events/verify/:id` *(Note: Registered inside eventRoutes.js)*
-- **Method:** `PUT`
-- **Controller:** `verifyPayment`
-- **Desc:** Staff approves or rejects a participant's payment proof.
-- **URL Params:** `id` (Participant ID)
-- **Body:** `{ status }` (e.g., 'APPROVED')
-- **Auth Reqd:** Yes
-- **Roles:** LEADER, HOD
-- **Response:** `{ message: "Payment Verified Successfully" }`
-- **Errors:** 400 No payment proof uploaded
-
----
-
-### Analytics & System Modules
-**12. Get Analytics**
-- **URL:** `/api/analytics/`
-- **Method:** `GET`
-- **Controller:** `getAnalytics`
-- **Desc:** Returns system-wide statistics (counts and total revenue).
-- **Auth Reqd:** Yes
-- **Roles:** ADMIN, HOD
-- **Response:** `{ totalEvents, totalParticipants, totalRevenue }`
-
-**13. Generate Certificate**
-- **URL:** `/api/certificate/generate/:id`
-- **Method:** `GET`
-- **Controller:** `generateCertificate`
-- **Desc:** Downloads a PDF certificate for an approved participant.
-- **URL Params:** `id` (Participant ID)
-- **Auth Reqd:** Yes *(Wait, note: currently protected by `protect`. Should test if participant needs auth or if handled differently)*
-- **Response:** `application/pdf` download stream
-- **Errors:** 400 Payment not approved
-
-**14. Get Notifications**
-- **URL:** `/api/notifications/`
-- **Method:** `GET`
-- **Controller:** `getNotifications`
-- **Desc:** Returns the logged-in user's notifications.
-- **Auth Reqd:** Yes
-- **Response:** Array of Notification Objects
-
-**15. Mark Notification Read**
-- **URL:** `/api/notifications/read/:id`
-- **Method:** `PUT`
-- **Controller:** `markAsRead`
-- **URL Params:** `id` (Notification ID)
-- **Auth Reqd:** Yes
-- **Response:** `{ message: "Marked as read" }`
-
-**16. Generate SES Report**
-- **URL:** `/api/ses/generate`
-- **Method:** `POST`
-- **Controller:** `generateSESReport`
-- **Desc:** Pings Google Gemini API to generate an event report string.
-- **Body:** `{ eventDetails, feedbackSummary }`
-- **Auth Reqd:** Yes
-- **Roles:** HOD
-- **Response:** `{ report: "..." }`
-
-
-## 8. Role-based Features
-
-- **ADMIN**: 
-  - Complete oversight. 
-  - Can create events.
-  - Sole authority to Approve/Reject pending events created by HODs.
-  - Can mark events completed.
-  - Views high-level analytics.
-- **HOD** (Head of Department): 
-  - Creates events.
-  - Can mark events completed.
-  - Verifies event payments.
-  - Solicits Gemini AI for SES Reports.
-  - Views analytics.
-- **LEADER** (Event Leaders): 
-  - Ground-level staff.
-  - Cannot create events.
-  - Primary role is Verifying Payments uploaded by participants.
-- **PARTICIPANT** (Public User):
-  - No authentication in the system.
-  - Browses Approved events.
-  - Fills registration form.
-  - Scans received QR code.
-  - Uploads payment screenshot via open route parameter mapping.
-
-
-## 9. Frontend Implementation Plan
-
-### Required Pages
-1. **Public Landing Page:** Displays a grid of `GET /api/events/public`.
-2. **Registration Form:** A public dynamic form linked to a specific event ID. Triggers `POST /api/participants/register`.
-3. **Payment Step Page:** Upon registration success, displays the returned QR code and asks the user to upload their screenshot (`POST /api/participants/upload/:id`). 
-4. **Login Portal:** Shared portal for Admin/HOD/Leader (`POST /api/auth/login`).
-5. **Dashboard Frame:** Includes Sidebar, Header, and logic to display roles based on localstorage.
-
-### Role-Based Dashboards
-- **Admin Dashboard:**
-  - Route: `/admin/dashboard`
-  - Widgets showing `totalRevenue` and `totalEvents`.
-  - Table: Pending Events with `Approve` / `Reject` action buttons.
-- **HOD Dashboard:**
-  - Route: `/hod/dashboard`
-  - Table: Owned Events.
-  - Form: Create Event Modal.
-  - View: Participant list for payment verification.
-  - Tool: SES Report Generator UI (Textareas for details & feedback -> AI Report).
-- **Leader Dashboard:**
-  - Route: `/leader/dashboard`
-  - Table: Assigned Participants indicating `Payment Status: PENDING`.
-  - Action: Clicking a row opens a modal displaying the Cloudinary image URL, with `Verify` / `Reject` buttons.
-
-### Workflows
-- **Auth Flow:** Store JWT in `localStorage` or `cookies`. Intercept all `axios` requests to append `Authorization: Bearer <token>`.
-- **Registration Flow:** Ensure state management handles the transition seamlessly between Form -> Success UI (Email parsing) -> Upload UI.
-
-## 10. API Collection Structure
-(To be imported into Postman / Thunder Client)
-
-1. **Auth**
-   - `POST /api/auth/register`
-   - `POST /api/auth/login`
-2. **Events**
-   - `GET /api/events/public` (No Auth)
-   - `POST /api/events/create` (Auth: Bearer)
-   - `GET /api/events/pending` (Auth: Bearer)
-   - `PUT /api/events/approve/:id` (Auth: Bearer)
-   - `PUT /api/events/reject/:id` (Auth: Bearer)
-   - `PUT /api/events/complete/:id` (Auth: Bearer)
-3. **Participants**
-   - `POST /api/participants/register`
-   - `POST /api/participants/upload/:id`
-   - `PUT /api/events/verify/:id` (Auth: Bearer)
-4. **Operations**
-   - `GET /api/analytics` (Auth: Bearer)
-   - `GET /api/certificate/generate/:id` (Auth: Bearer)
-   - `POST /api/ses/generate` (Auth: Bearer)
-5. **Notifications**
-   - `GET /api/notifications` (Auth: Bearer)
-   - `PUT /api/notifications/read/:id` (Auth: Bearer)
-
-## 11. Notes for Frontend Developers
-- **File Uploads**: When implementing the payment screenshot upload, you must send the request as `multipart/form-data`, **not** `application/json`. You can name the file key anything (e.g., `file`, `screenshot`, `payment`) as the backend uses `upload.any()` to safely extract the first file array element.
-- **Cloudinary Links**: The participant model stores absolute URLs (e.g., `https://res.cloudinary.com/...`). You can render them directly in `<img>` tags for verification dashboards.
-- **Error Handling**: Every backend error responds with a standard `{ message: "..." }` or `{ success: false, message: "..." }`. Ensure your Axios interceptors catch 400, 401, 403, and 404 blockages and surface these messages via a Toast notification.
-- **CORS Support**: The backend utilizes the standard `cors` package, so local development requests from `localhost:3000` (React/Next) to `localhost:5000` (Express) will pass smoothly without pre-flight errors. 
-- **Certificate Downloads**: The certificate API returns a PDF binary stream. On the frontend, ensure you parse the axios response as a `blob`, generate a blob URL, and programmatically trigger a download anchor tag click.
+| Area | Original | Rewritten |
+|---|---|---|
+| Color system | Not specified | Exact hex variables with usage rules per element |
+| Typography | Not specified | Playfair Display + DM Sans + JetBrains Mono |
+| CSS variable names | None | Full `:root {}` block ready to paste |
+| Component styling | Generic | Per-component color, shadow, hover rules |
+| API error handling | Mentioned | Specified per page + per form field |
+| Empty states | Not mentioned | Explicitly required |
+| Toast specs | "use toasts" | Colors, icons, position, timing defined |
+| Folder structure | Listed | Fully mapped with every file named |
+| Route map | Partial | Complete with role guards |
+| Output format | Vague | Explicit: start order, no placeholders |

@@ -1,100 +1,72 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from './context/AuthContext';
+import React, { Suspense, lazy } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-// Actual Page Imports
-import { Landing } from './pages/public/Landing';
-import { Register } from './pages/public/Register';
-import { Payment } from './pages/public/Payment';
-import { Login } from './pages/auth/Login';
-import { DashboardShell } from './components/layout/DashboardShell';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import Navbar from './components/Navbar';
+import Loader from './components/Loader';
 
-import { AdminDashboard } from './pages/admin/AdminDashboard';
-import { HODDashboard } from './pages/hod/HODDashboard';
-import { Leaders } from './pages/hod/Leaders';
-import { EventDetails } from './pages/hod/EventDetails';
-import { LeaderDashboard } from './pages/leader/LeaderDashboard';
-import { Notifications } from './pages/common/Notifications';
+// Lazy load pages
+const LandingPage = lazy(() => import('./pages/LandingPage'));
+const EventDetailsPage = lazy(() => import('./pages/EventDetailsPage'));
+const RegistrationPage = lazy(() => import('./pages/RegistrationPage'));
+const LoginPage = lazy(() => import('./pages/LoginPage'));
 
-// Protected Route Wrapper
-const ProtectedRoute = ({ children, allowedRoles }) => {
-  const { isAuthenticated, role, loading } = useAuth();
+// Dashboards
+const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
+const HODDashboard = lazy(() => import('./pages/hod/HODDashboard'));
+const LeaderDashboard = lazy(() => import('./pages/leader/LeaderDashboard'));
 
-  if (loading) return <div>Loading...</div>;
+const Unauthorized = () => (
+  <div style={{ textAlign: 'center', padding: '50px' }}>
+    <h1>403 - Unauthorized</h1>
+    <p>You do not have permission to access this page.</p>
+  </div>
+);
 
-  if (!isAuthenticated) return <Navigate to="/login" replace />;
-
-  if (allowedRoles && !allowedRoles.includes(role)) {
-    return <Navigate to="/login" replace />;
-  }
-
-  return children;
-};
-
-
-
-function App() {
+const App = () => {
   return (
-    <Routes>
-      {/* Public Pages */}
-      <Route path="/" element={<Landing />} />
-      <Route path="/register/:eventId" element={<Register />} />
-      <Route path="/payment/:participantId" element={<Payment />} />
-      
-      {/* Auth */}
-      <Route path="/login" element={<Login />} />
-
-      {/* Protected Dashboards */}
-      <Route 
-        path="/admin/*" 
-        element={
-          <ProtectedRoute allowedRoles={['ADMIN']}>
-            <DashboardShell>
+    <Router>
+      <AuthProvider>
+        <div className="app">
+          <Navbar />
+          <main className="main-content">
+            <Suspense fallback={<Loader />}>
               <Routes>
-                <Route path="dashboard" element={<AdminDashboard />} />
-                <Route path="notifications" element={<Notifications />} />
-                <Route path="*" element={<Navigate to="dashboard" />} />
-              </Routes>
-            </DashboardShell>
-          </ProtectedRoute>
-        } 
-      />
+                {/* Public Routes */}
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/events/:id" element={<EventDetailsPage />} />
+                <Route path="/register/:id" element={<RegistrationPage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/unauthorized" element={<Unauthorized />} />
 
-      <Route 
-        path="/hod/*" 
-        element={
-          <ProtectedRoute allowedRoles={['HOD']}>
-            <DashboardShell>
-              <Routes>
-                <Route path="dashboard" element={<HODDashboard />} />
-                <Route path="leaders" element={<Leaders />} />
-                <Route path="events/:id" element={<EventDetails />} />
-                <Route path="notifications" element={<Notifications />} />
-                <Route path="*" element={<Navigate to="dashboard" />} />
-              </Routes>
-            </DashboardShell>
-          </ProtectedRoute>
-        } 
-      />
+                {/* Admin Routes */}
+                <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
+                  <Route path="/admin/*" element={<AdminDashboard />} />
+                </Route>
 
-      <Route 
-        path="/leader/*" 
-        element={
-          <ProtectedRoute allowedRoles={['LEADER']}>
-            <DashboardShell>
-              <Routes>
-                <Route path="dashboard" element={<LeaderDashboard />} />
-                <Route path="events/:id" element={<EventDetails />} />
-                <Route path="notifications" element={<Notifications />} />
-                <Route path="*" element={<Navigate to="dashboard" />} />
-              </Routes>
-            </DashboardShell>
-          </ProtectedRoute>
-        } 
-      />
+                {/* HOD Routes */}
+                <Route element={<ProtectedRoute allowedRoles={['HOD']} />}>
+                  <Route path="/hod/*" element={<HODDashboard />} />
+                </Route>
 
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+                {/* Leader Routes */}
+                <Route element={<ProtectedRoute allowedRoles={['LEADER']} />}>
+                  <Route path="/leader/*" element={<LeaderDashboard />} />
+                </Route>
+
+                {/* Fallback */}
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </Suspense>
+          </main>
+          <ToastContainer position="top-right" autoClose={4000} />
+        </div>
+      </AuthProvider>
+    </Router>
   );
-}
+};
 
 export default App;

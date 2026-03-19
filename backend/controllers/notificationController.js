@@ -2,6 +2,9 @@ const Notification = require("../models/Notification");
 
 exports.getNotifications = async (req, res) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
     const notifications = await Notification.find({
       userId: req.user._id,
     }).sort({ createdAt: -1 });

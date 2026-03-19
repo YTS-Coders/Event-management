@@ -21,18 +21,19 @@ const {
 
 const { verifyPayment } = require("../controllers/participantController");
 
+router.get("/public", getApprovedEvents);
+
+router.get("/pending", protect, authorizeRoles("ADMIN"), getPendingEvents);
+
 router.post("/create", protect, createEvent);
 
 router.get("/", protect, getEvents);
+router.get("/my-events", protect, getEvents);
 router.post("/comment/:id", protect, addComment);
 router.post("/rule/:id", protect, addRule);
 router.get("/:id", protect, getEventById);
 router.put("/:id", protect, updateEvent);
 router.delete("/:id", protect, deleteEvent);
-
-router.get("/pending", protect, authorizeRoles("ADMIN"), getPendingEvents);
-
-router.get("/public", getApprovedEvents);
 
 router.put("/approve/:id", protect, authorizeRoles("ADMIN"), approveEvent);
 

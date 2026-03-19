@@ -1,0 +1,186 @@
+.registration-page {
+  padding: 4rem 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.registration-container {
+  width: 100%;
+  max-width: 800px;
+  padding: 3rem;
+}
+
+.progress-stepper {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4rem;
+  position: relative;
+}
+
+.progress-stepper::before {
+  content: '';
+  position: absolute;
+  top: 15px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--linen);
+  z-index: 1;
+}
+
+.step-circle {
+  width: 32px;
+  height: 32px;
+  background: var(--white);
+  border: 2px solid var(--linen);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2;
+  font-weight: 700;
+  color: var(--text-light);
+  position: relative;
+}
+
+.step-circle.active {
+  border-color: var(--burgundy);
+  color: var(--burgundy);
+}
+
+.step-circle.complete {
+  background: var(--burgundy);
+  border-color: var(--burgundy);
+  color: var(--white);
+}
+
+.step-label {
+  position: absolute;
+  top: 40px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  color: var(--text-mid);
+}
+
+.form-step h2 {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.registration-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.game-selection-card {
+  padding: 1.5rem;
+  border: 1px solid var(--linen);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+  position: relative;
+}
+
+.game-selection-card:hover {
+  background: var(--linen);
+}
+
+.game-selection-card.selected {
+  border-color: var(--burgundy);
+  background: rgba(113, 9, 39, 0.05);
+}
+
+.game-selection-card.selected::before {
+  content: '✓';
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: var(--burgundy);
+  font-weight: 700;
+}
+
+.payment-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 3rem;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+.qr-section {
+  text-align: center;
+  padding: 2rem;
+  background: var(--plaster);
+  border-radius: 12px;
+}
+
+.upi-id {
+  margin-top: 1rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+}
+
+.payment-amount {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--burgundy);
+}
+
+.dropzone {
+  border: 2px dashed var(--brass);
+  padding: 3rem 1rem;
+  text-align: center;
+  border-radius: 8px;
+  background: var(--white);
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.success-step {
+  text-align: center;
+  padding: 3rem 0;
+}
+
+.success-icon {
+  font-size: 5rem;
+  margin-bottom: 1rem;
+}
+
+.id-box {
+  background: var(--indigo);
+  color: var(--white);
+  padding: 1rem 2rem;
+  border-radius: 4px;
+  display: inline-block;
+  margin: 2rem 0;
+  font-size: 1.2rem;
+}
+
+.registration-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--linen);
+}
+
+@media (max-width: 768px) {
+  .form-row, .payment-layout {
+    grid-template-columns: 1fr;
+  }
+}

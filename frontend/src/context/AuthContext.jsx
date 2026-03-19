@@ -1,60 +1,60 @@
-import { createContext, useState, useEffect, useContext, useMemo } from 'react';
+import React, { createContext, useState, useEffect, useContext } from 'react';
 
-const AuthContext = createContext();
+const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [role, setRole] = useState(null);
-  const [token, setToken] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [role, setRole] = useState(localStorage.getItem('role'));
   const [loading, setLoading] = useState(true);
 
+  // Persistence: Check for user on refresh if token exists
   useEffect(() => {
-    // Load auth state from local storage on mount
     const storedToken = localStorage.getItem('token');
-    const storedUser = localStorage.getItem('user');
     const storedRole = localStorage.getItem('role');
+    const storedUser = localStorage.getItem('user');
 
-    if (storedToken && storedUser && storedRole) {
+    if (storedToken && storedRole) {
       setToken(storedToken);
+      setRole(storedRole.toUpperCase());
       setUser(JSON.parse(storedUser));
-      setRole(storedRole);
     }
     setLoading(false);
   }, []);
 
-  const login = (userData, userRole, userToken) => {
+  const login = (userData, authToken) => {
+    const normalizedRole = userData.role.toUpperCase();
     setUser(userData);
-    setRole(userRole);
-    setToken(userToken);
+    setToken(authToken);
+    setRole(normalizedRole);
+    
+    localStorage.setItem('token', authToken);
+    localStorage.setItem('role', normalizedRole);
     localStorage.setItem('user', JSON.stringify(userData));
-    localStorage.setItem('role', userRole);
-    localStorage.setItem('token', userToken);
   };
 
   const logout = () => {
     setUser(null);
-    setRole(null);
     setToken(null);
-    localStorage.removeItem('user');
-    localStorage.removeItem('role');
+    setRole(null);
     localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    localStorage.removeItem('user');
   };
 
-  const authValue = useMemo(() => ({
-    user,
-    role,
-    token,
-    login,
-    logout,
-    isAuthenticated: !!token,
-    loading
-  }), [user, role, token, loading]);
-
   return (
-    <AuthContext.Provider value={authValue}>
-        {children}
+    <AuthContext.Provider value={{ user, token, role, loading, login, logout }}>
+      {children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
+
+export default AuthContext;
