@@ -21,7 +21,7 @@ const Sidebar = () => {
           { path: '/hod', label: 'Events Overview', icon: '📋' },
           { path: '/hod/create-event', label: 'Create Event', icon: '➕' },
           { path: '/hod/create-leader', label: 'Create Leader', icon: '👤' },
-          { path: '/hod/ses-report', label: 'SES Report', icon: '📄' },
+          { path: '/hod/iqac-report', label: 'IQAC Report', icon: '📄' },
         ];
       case 'LEADER':
         return [

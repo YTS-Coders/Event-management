@@ -4,7 +4,7 @@ import Sidebar from '../../components/Sidebar';
 import CreateEvent from './CreateEvent';
 import EditEvent from './EditEvent';
 import EventReport from './EventReport';
-import SESReport from './SESReport';
+import IQACReport from './IQACReport';
 import CreateLeader from './CreateLeader';
 import useFetch from '../../utils/useFetch';
 import axiosInstance from '../../api/axiosInstance';
@@ -106,7 +106,7 @@ const HODDashboard = () => {
           <Route index element={<HODOverview />} />
           <Route path="create-event" element={<CreateEvent />} />
           <Route path="create-leader" element={<CreateLeader />} />
-          <Route path="ses-report" element={<SESReport />} />
+          <Route path="iqac-report" element={<IQACReport />} />
           <Route path="edit-event/:id" element={<EditEvent />} />
           <Route path="event-report/:id" element={<EventReport />} />
         </Routes>

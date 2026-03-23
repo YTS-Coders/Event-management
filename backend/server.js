@@ -37,7 +37,7 @@ app.use("/api/participants", require("./routes/participantRoutes"));
 app.use("/api/analytics", require("./routes/analyticsRoutes"));
 app.use("/api/notifications", require("./routes/notificationRoutes"));
 app.use("/api/certificate", require("./routes/certificateRoutes"));
-app.use("/api/ses", require("./routes/sesRoutes"));
+app.use("/api/iqac", require("./routes/iqacRoutes"));
 app.use("/api/contacts", require("./routes/contactRoutes"));
 app.use("/api/departments", require("./routes/departmentRoutes"));
 
